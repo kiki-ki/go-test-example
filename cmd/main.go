@@ -12,6 +12,7 @@ import (
 func main() {
 	r := chi.NewRouter()
 	setRouter(r)
+
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatalf("!! %+v", err)
 	}
