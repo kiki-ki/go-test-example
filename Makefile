@@ -15,6 +15,9 @@ test-all:
 test-model:
 	go test -v ./internal/app/model/...
 
+test-handler:
+	go test -v ./internal/app/handler/...
+
 hello:
 	curl localhost:8080/hello
 

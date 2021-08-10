@@ -6,9 +6,7 @@ import (
 )
 
 func NewUserRepository(db database.DB) UserRepository {
-	return &userRepository{
-		db: db,
-	}
+	return &userRepository{db}
 }
 
 type UserRepository interface {
