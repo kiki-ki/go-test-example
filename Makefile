@@ -38,3 +38,6 @@ user-create:
 
 user-delete:
 	curl localhost:8080/users/1 -X DELETE
+
+user-transaction:
+	curl localhost:8080/users/transaction

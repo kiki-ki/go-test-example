@@ -15,7 +15,8 @@ import (
 
 func NewUserHandler(db database.DB) UserHandler {
 	return &userHandler{
-		userRepo: repository.NewUserRepository(db),
+		db: db,
+		userRepo: repository.NewUserRepository(),
 	}
 }
 
@@ -25,14 +26,16 @@ type UserHandler interface {
 	Update(http.ResponseWriter, *http.Request)
 	Create(http.ResponseWriter, *http.Request)
 	Delete(http.ResponseWriter, *http.Request)
+	Transaction(http.ResponseWriter, *http.Request)
 }
 
 type userHandler struct {
+	db database.DB
 	userRepo repository.UserRepository
 }
 
 func (h *userHandler) Index(w http.ResponseWriter, r *http.Request) {
-	users, err := h.userRepo.All()
+	users, err := h.userRepo.All(h.db.Conn())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, err.Error())
@@ -49,7 +52,7 @@ func (h *userHandler) Show(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, err.Error())
 		return
 	}
-	u, err := h.userRepo.Find(uId)
+	u, err := h.userRepo.Find(uId, h.db.Conn())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, err.Error())
@@ -66,7 +69,7 @@ func (h *userHandler) Update(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, err.Error())
 		return
 	}
-	u, err := h.userRepo.Find(uId)
+	u, err := h.userRepo.Find(uId, h.db.Conn())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, err.Error())
@@ -82,7 +85,7 @@ func (h *userHandler) Update(w http.ResponseWriter, r *http.Request) {
 	u.Name = req.Name
 	u.Email = req.Email
 	u.Age = req.Age
-	err = h.userRepo.Update(&u)
+	err = h.userRepo.Update(&u, h.db.Conn())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, nil)
@@ -104,7 +107,7 @@ func (h *userHandler) Create(w http.ResponseWriter, r *http.Request) {
 	u.Name = req.Name
 	u.Email = req.Email
 	u.Age = req.Age
-	err = h.userRepo.Create(&u)
+	err = h.userRepo.Create(&u, h.db.Conn())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, err.Error())
@@ -121,13 +124,13 @@ func (h *userHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, err.Error())
 		return
 	}
-	_, err = h.userRepo.Find(uId)
+	_, err = h.userRepo.Find(uId, h.db.Conn())
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		render.JSON(w, r, err.Error())
 		return
 	}
-	err = h.userRepo.Delete(uId)
+	err = h.userRepo.Delete(uId, h.db.Conn())
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		render.JSON(w, r, err.Error())
@@ -135,4 +138,35 @@ func (h *userHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	render.JSON(w, r, fmt.Sprintf("id=%d is deleted", uId))
+}
+
+func (h *userHandler) Transaction(w http.ResponseWriter, r *http.Request) {
+	tx, err := h.db.Conn().Begin()
+	defer tx.Rollback()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		render.JSON(w, r, err.Error())
+		return
+	}
+	u := new(model.User)
+	u.Name = "a"
+	u.Email = "a@exa.com"
+	u.Age = 20
+	err = h.userRepo.Create(u, tx)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		render.JSON(w, r, err.Error())
+		return
+	}
+	u.Id = 0
+	u.Email = "b@exa.com"
+	err = h.userRepo.Create(u, tx)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		render.JSON(w, r, err.Error())
+		return
+	}
+	tx.Commit()
+	w.WriteHeader(http.StatusOK)
+	render.JSON(w, r, u)
 }

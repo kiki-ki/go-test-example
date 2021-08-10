@@ -27,7 +27,7 @@ func TestUserRepository_Find(t *testing.T) {
 		WithArgs(want.Id).
 		WillReturnRows(rows)
 
-	got, err := repository.NewUserRepository(db).Find(want.Id)
+	got, err := repository.NewUserRepository().Find(want.Id, db.Conn())
 	if err != nil {
 		t.Error(err)
 	}

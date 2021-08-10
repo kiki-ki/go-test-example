@@ -40,5 +40,6 @@ func setRouter(r chi.Router, db database.DB) {
 		r.Put("/{userId}", userH.Update)
 		r.Post("/", userH.Create)
 		r.Delete("/{userId}", userH.Delete)
+		r.Get("/transaction", userH.Transaction)
 	})
 }
