@@ -8,7 +8,7 @@ import (
 	"github.com/kiki-ki/go-test-example/internal/app/handler"
 )
 
-func TestHello_Hello(t *testing.T) {
+func TestHelloHandler_Hello(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/hello", nil)
 	handler.NewHelloHandler().Hello(w, r)

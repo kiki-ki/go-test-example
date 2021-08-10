@@ -6,10 +6,11 @@ import (
 )
 
 func main() {
-	db := database.NewDB()
+	sqlDB := database.NewSqlDB()
+	db := database.NewDB(sqlDB)
 	defer db.Close()
 
-	conn := db.Connect()
+	conn := db.Conn()
 	user1 := model.User{
 		Name:  "user1",
 		Email: "user1@exa.com",

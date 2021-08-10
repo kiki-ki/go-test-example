@@ -18,6 +18,9 @@ test-model:
 test-handler:
 	go test -v ./internal/app/handler/...
 
+test-repository:
+	go test -v ./internal/app/repository/...
+
 hello:
 	curl localhost:8080/hello
 

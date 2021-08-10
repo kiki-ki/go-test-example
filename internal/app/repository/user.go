@@ -23,7 +23,7 @@ type userRepository struct {
 
 func (r *userRepository) All() ([]model.User, error) {
 	var users []model.User
-	_, err := r.db.Connect().Select(&users, "select * from users")
+	_, err := r.db.Conn().Select(&users, "SELECT * FROM users")
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (r *userRepository) All() ([]model.User, error) {
 
 func (r *userRepository) Find(uId int) (model.User, error) {
 	var u model.User
-	err := r.db.Connect().SelectOne(&u, "select * from users where id=?", uId)
+	err := r.db.Conn().SelectOne(&u, "SELECT * FROM users WHERE id = ?", uId)
 	if err != nil {
 		return model.User{}, err
 	}
@@ -40,7 +40,7 @@ func (r *userRepository) Find(uId int) (model.User, error) {
 }
 
 func (r *userRepository) Update(u *model.User) error {
-	_, err := r.db.Connect().Update(u)
+	_, err := r.db.Conn().Update(u)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (r *userRepository) Update(u *model.User) error {
 }
 
 func (r *userRepository) Create(u *model.User) error {
-	err := r.db.Connect().Insert(u)
+	err := r.db.Conn().Insert(u)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (r *userRepository) Create(u *model.User) error {
 }
 
 func (r *userRepository) Delete(uId int) error {
-	_, err := r.db.Connect().Exec("delete from users where id=?", uId)
+	_, err := r.db.Conn().Exec("delete from users where id=?", uId)
 	if err != nil {
 		return err
 	}

@@ -20,7 +20,7 @@ func TestIsOverTwentyYearsOld(t *testing.T) {
 			u := new(model.User)
 			u.Age = tt.in
 			if got := u.IsOverTwentyYearsOld(); tt.want != got {
-				t.Errorf("want: age(%d) = %v, got: %v, ", tt.in, tt.want, got)
+				t.Errorf("want: age(%d) = %v, got: %v", tt.in, tt.want, got)
 			}
 		})
 	}

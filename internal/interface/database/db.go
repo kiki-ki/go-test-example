@@ -10,21 +10,26 @@ import (
 )
 
 type DB interface {
-	Connect() *gorp.DbMap
-	Close()
+	Conn() *gorp.DbMap
+	Close() error
 }
 
-func NewDB() DB {
-	sqlDB, err := sql.Open("mysql", "user:pass@tcp(localhost:3314)/gte_dev")
-	if err != nil {
-		panic(err.Error())
-	}
+func NewDB(sqlDB *sql.DB) DB {
 	dbmap := &gorp.DbMap{Db: sqlDB, Dialect: gorp.MySQLDialect{}}
 	dbmap.TraceOn("[gorp]", &logger{})
 	addTableSettings(dbmap)
 	return &db{
 		connection: dbmap,
 	}
+}
+
+func NewSqlDB() *sql.DB {
+	// TODO: env対応
+	sqlDB, err := sql.Open("mysql", "user:pass@tcp(localhost:3314)/gte_dev")
+	if err != nil {
+		panic(err.Error())
+	}
+	return sqlDB
 }
 
 func addTableSettings(conn *gorp.DbMap) {
@@ -35,15 +40,16 @@ type db struct {
 	connection *gorp.DbMap
 }
 
-func (db *db) Connect() *gorp.DbMap {
+func (db *db) Conn() *gorp.DbMap {
 	return db.connection
 }
 
-func (db *db) Close() {
+func (db *db) Close() error {
 	err := db.connection.Db.Close()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
+	return nil
 }
 
 type logger struct{}

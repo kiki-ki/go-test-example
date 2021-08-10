@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-	db := database.NewDB()
+	sqlDB := database.NewSqlDB()
+	db := database.NewDB(sqlDB)
 	defer db.Close()
 
 	r := chi.NewRouter()
