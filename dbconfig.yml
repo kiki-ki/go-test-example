@@ -1,11 +1,11 @@
 test:
   dialect: mysql
-  datasource: user:pass@tcp(localhost:3306)/gte_test?parseTime=true
-  dir: db/migration
+  datasource: user:pass@tcp(localhost:3314)/gte_test?parseTime=true
+  dir: internal/interface/database/migration
   table: migrations
 
 development:
   dialect: mysql
   datasource: user:pass@tcp(localhost:3314)/gte_dev?parseTime=true
-  dir: db/migration
+  dir: internal/interface/database/migration
   table: migrations

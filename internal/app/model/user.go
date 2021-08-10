@@ -1,8 +1,12 @@
 package model
 
 type User struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Age   int    `json:"age"`
+	Id    int    `db:"id" json:"id"`
+	Name  string `db:"name" json:"name"`
+	Email string `db:"email" json:"email"`
+	Age   int    `db:"age" json:"age"`
+}
+
+func (u *User) IsOverTwentyYearsOld() bool {
+	return u.Age >= 20
 }
