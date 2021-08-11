@@ -15,10 +15,10 @@ func TestUserRepository_Find(t *testing.T) {
 	defer db.Close()
 
 	want := model.User{
-		Id: 1,
-		Name: "taro",
+		Id:    1,
+		Name:  "taro",
 		Email: "taro@chan.com",
-		Age: 5,
+		Age:   5,
 	}
 
 	rows := sqlmock.NewRows([]string{"id", "name", "email", "age"}).

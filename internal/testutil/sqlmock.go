@@ -8,6 +8,8 @@ import (
 )
 
 func NewMockDB(t *testing.T) (database.DB, sqlmock.Sqlmock) {
+	t.Helper()
+
 	sqlDB, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatal(err)

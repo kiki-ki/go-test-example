@@ -15,7 +15,7 @@ import (
 
 func NewUserHandler(db database.DB) UserHandler {
 	return &userHandler{
-		db: db,
+		db:       db,
 		userRepo: repository.NewUserRepository(),
 	}
 }
@@ -30,7 +30,7 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	db database.DB
+	db       database.DB
 	userRepo repository.UserRepository
 }
 
@@ -142,7 +142,14 @@ func (h *userHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 func (h *userHandler) Transaction(w http.ResponseWriter, r *http.Request) {
 	tx, err := h.db.Conn().Begin()
-	defer tx.Rollback()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		render.JSON(w, r, err.Error())
+		return
+	}
+	defer func() {
+		err = tx.Rollback()
+	}()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, err.Error())
@@ -166,7 +173,12 @@ func (h *userHandler) Transaction(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, err.Error())
 		return
 	}
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		render.JSON(w, r, err.Error())
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 	render.JSON(w, r, u)
 }

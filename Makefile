@@ -13,13 +13,13 @@ test-all:
 	go test -v ./...
 
 test-model:
-	go test -v ./internal/app/model/...
+	go test -v ./internal/app/model
 
 test-handler:
-	go test -v ./internal/app/handler/...
+	go test -v ./internal/app/handler
 
 test-repository:
-	go test -v ./internal/app/repository/...
+	go test -v ./internal/app/repository
 
 hello:
 	curl localhost:8080/hello

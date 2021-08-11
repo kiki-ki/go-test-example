@@ -19,7 +19,7 @@ type UserRepository interface {
 	Delete(uId int, e executer) error
 }
 
-type userRepository struct {}
+type userRepository struct{}
 
 func (r *userRepository) All(e executer) ([]model.User, error) {
 	var users []model.User
