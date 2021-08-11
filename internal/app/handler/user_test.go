@@ -43,5 +43,8 @@ func TestUserHandler_Show(t *testing.T) {
 	res := w.Result()
 	defer res.Body.Close()
 
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
 	testutil.AssertResponse(t, res, want, "./testdata/user/show_res.golden")
 }
